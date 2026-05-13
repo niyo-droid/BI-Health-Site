@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDPR Learning Hub</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+const ARTICLES = [
+  {
+    num: 1, chapter: "I", chapterName: "General Provisions", name: "Subject-matter and Objectives",
+    summary: "Establishes GDPR's purpose: protect fundamental rights regarding personal data and ensure free movement of data within the EU.",
+    keyPoints: ["Protects natural persons' fundamental rights regarding personal data", "Ensures free flow of personal data within the EU", "Sets the overarching rights-based philosophy underpinning all subsequent articles"],
+    tags: ["Foundational", "Rights", "EU Framework"], consentRelevance: "Partial",
+    consentDetail: "Sets the foundational philosophy that all processing (including consent-based) must respect individuals' fundamental rights.",
+    ccpa: "CCPA is a California state statute focused on consumer privacy rights, not framed as a fundamental rights instrument. There is no 'free movement' equivalent — CCPA is primarily a transparency and opt-out law.",
+    ccpaDiff: ["GDPR = fundamental rights instrument; CCPA = consumer protection statute", "GDPR aims at free movement of data across EU; CCPA has no equivalent cross-border data flow objective", "GDPR applies to all natural persons; CCPA covers only California consumers"]
+  },
+  {
+    num: 2, chapter: "I", chapterName: "General Provisions", name: "Material Scope",
+    summary: "Defines what processing GDPR applies to — automated or structured manual processing. Excludes purely personal/household activities, national security, and law enforcement.",
+    keyPoints: ["Applies to automated processing and structured manual filing systems", "Excludes purely personal/household use", "Excludes national security and law enforcement processing", "Applies to both controllers and processors"],
+    tags: ["Scope", "Exemptions", "Applicability"], consentRelevance: "Partial",
+    consentDetail: "Any consent mechanism within GDPR's material scope (cookie banners, CRMs, sign-up forms) must comply. Purely household use is exempt.",
+    ccpa: "CCPA applies to for-profit businesses meeting specific thresholds: annual gross revenue >$25M, OR data on 100,000+ consumers/households, OR 50%+ revenue from selling consumers' personal information.",
+    ccpaDiff: ["GDPR covers non-profits and public bodies; CCPA only covers for-profit businesses", "CCPA has revenue/volume thresholds; GDPR has no such thresholds", "GDPR excludes household use explicitly; CCPA exempts employee and B2B data (partially)", "GDPR applies to any organisation processing EU personal data; CCPA has quantitative eligibility criteria"]
+  },
+  {
+    num: 3, chapter: "I", chapterName: "General Provisions", name: "Territorial Scope",
+    summary: "GDPR applies to EU-based controllers/processors AND to non-EU organisations that offer goods/services to EU data subjects or monitor their behaviour.",
+    keyPoints: ["Establishment principle: applies to EU-based controllers wherever processing occurs", "Targeting principle: non-EU orgs targeting EU users must comply", "Monitoring principle: tracking EU individuals' online behaviour triggers GDPR", "Non-EU controllers must appoint an EU representative (Art. 27)"],
+    tags: ["Scope", "Extra-territorial", "Global Reach"], consentRelevance: "Yes",
+    consentDetail: "CMPs must be deployed by any organisation targeting EU users regardless of where the org is based. This is why global companies deploy OneTrust geo-targeted consent banners.",
+    ccpa: "CCPA applies to businesses doing business in California regardless of physical location. No physical presence in California is required — if you serve California consumers at scale, CCPA applies.",
+    ccpaDiff: ["Both have extra-territorial reach — global companies must comply with both", "GDPR's 'monitoring behaviour' test is broader than CCPA's business nexus test", "CCPA focuses on doing business 'in California'; GDPR focuses on 'offering' to EU individuals", "GDPR requires EU representative for non-EU controllers (Art. 27); CCPA has no equivalent", "In practice: a company with global users likely needs both a GDPR CMP and CCPA opt-out mechanisms"]
+  },
+  {
+    num: 4, chapter: "I", chapterName: "General Provisions", name: "Definitions",
+    summary: "Provides the complete conceptual vocabulary of GDPR: 26 definitions including personal data, processing, controller, processor, data subject, consent, pseudonymisation, and profiling.",
+    keyPoints: ["Consent = freely given, specific, informed, unambiguous indication of the data subject's wishes (Art. 4(11))", "Controller = determines purposes and means of processing", "Processor = processes personal data on behalf of the controller", "Personal data = any info relating to an identified or identifiable natural person", "Pseudonymisation = processing so data can't be attributed without additional info kept separately", "Profiling = automated processing to evaluate personal aspects (behaviour, preferences, location)"],
+    tags: ["Definitions", "Consent", "Controller", "Processor", "Pseudonymisation"], consentRelevance: "Yes",
+    consentDetail: "Art. 4(11) defines consent — the foundational definition every CMP operationalises. 'Freely given, specific, informed, unambiguous' are the four pillars every consent flow must satisfy.",
+    ccpa: "CCPA defines 'personal information' more broadly (includes household data). CPRA (2023) added a definition of 'consent' closer to GDPR's. CCPA distinguishes between 'businesses', 'service providers', 'contractors', and 'third parties' — different from GDPR's controller/processor model.",
+    ccpaDiff: ["GDPR: controller/processor model. CCPA: business/service provider/contractor/third party model", "CCPA 'personal information' includes household-level data; GDPR is individual-only", "CCPA originally had no consent definition; CPRA added one closer to GDPR's standard", "GDPR's 'special categories' (Art. 9) ≈ CCPA/CPRA's 'sensitive personal information' (SPI)", "Pseudonymisation is a GDPR concept with legal significance; CCPA treats pseudonymised data differently"]
+  },
+  {
+    num: 5, chapter: "II", chapterName: "Principles", name: "Principles Relating to Processing",
+    summary: "Establishes seven core data processing principles that apply regardless of which legal basis is used. Non-compliance with any principle is itself a GDPR violation.",
+    keyPoints: ["Lawfulness, fairness and transparency", "Purpose limitation — use data only for the stated purpose", "Data minimisation — collect only what is necessary", "Accuracy — keep data correct and up to date", "Storage limitation — don't retain data longer than needed", "Integrity and confidentiality — appropriate security measures", "Accountability — controller must demonstrate compliance"],
+    tags: ["Principles", "Accountability", "Data Minimisation", "Transparency"], consentRelevance: "Yes",
+    consentDetail: "Even when consent is the legal basis, all seven principles still apply. Consent cannot override purpose limitation or data minimisation. You can't collect more data than needed just because the user consented.",
+    ccpa: "CCPA does not codify equivalent processing principles. CPRA (2023) introduced 'use limitation' and 'data minimisation' concepts, narrowing the gap. CCPA is primarily a disclosure and opt-out law, not a principles-based framework.",
+    ccpaDiff: ["GDPR's seven principles are hard legal obligations; CCPA has no equivalent codified principles", "CPRA partially introduced data minimisation and purpose limitation — influenced by GDPR", "GDPR's accountability principle requires documenting compliance; CCPA has less explicit documentation mandate", "Storage limitation is a GDPR requirement; CCPA does not impose equivalent retention limits"]
+  },
+  {
+    num: 6, chapter: "II", chapterName: "Principles", name: "Lawfulness of Processing",
+    summary: "Lists the six legal bases for processing personal data. Every processing activity must rest on exactly one of these bases before it begins.",
+    keyPoints: ["Art. 6(1)(a): Consent — freely given, specific, informed, unambiguous", "Art. 6(1)(b): Contract performance or pre-contractual steps", "Art. 6(1)(c): Legal obligation", "Art. 6(1)(d): Vital interests", "Art. 6(1)(e): Public task", "Art. 6(1)(f): Legitimate interests (not available to public authorities)"],
+    tags: ["Legal Basis", "Consent", "Legitimate Interests", "Lawfulness"], consentRelevance: "Yes",
+    consentDetail: "Consent is only ONE of six legal bases. CMPs exist to capture this basis when needed. A critical professional skill is determining whether consent is actually required — consent is not always the right choice.",
+    ccpa: "CCPA has NO legal basis framework. Businesses do not need to justify why they process data before they begin. CCPA is entirely opt-out based — you process until a consumer objects (except for data sale, which requires proactive opt-out mechanisms).",
+    ccpaDiff: ["GDPR: must identify legal basis BEFORE processing begins. CCPA: no pre-authorisation required", "GDPR's legitimate interests has no CCPA equivalent — CCPA doesn't require a balancing test", "CCPA's opt-out from sale/sharing ≈ the practical result of GDPR's objection right (Art. 21), not a legal basis", "Consent under GDPR = active opt-in. CCPA's default = opt-in for collection; opt-out only required for sale/sharing", "This is the single biggest structural difference between GDPR and CCPA"]
+  },
+  {
+    num: 7, chapter: "II", chapterName: "Principles", name: "Conditions for Consent",
+    summary: "Specifies the requirements for valid consent: demonstrably given, unbundled from other terms, withdrawable at any time as easily as given, and not conditional on service delivery unless necessary.",
+    keyPoints: ["Controller must be able to demonstrate consent was given (burden of proof on controller)", "Consent request must be clearly distinguishable from other matters (unbundled)", "Withdrawal of consent must be as easy as giving it — always", "Consent cannot be a condition of a contract unless processing is necessary for that contract", "Pre-ticked boxes, silence, or inactivity do NOT constitute valid consent"],
+    tags: ["Consent", "CMP", "Withdrawal", "Conditions"], consentRelevance: "Yes",
+    consentDetail: "This is THE most critical article for CMP design. OneTrust configurations must ensure: no pre-ticked boxes, granular purpose-level consent, easy withdrawal, and audit logs proving consent was given.",
+    ccpa: "CCPA/CPRA requires opt-out mechanisms for data sale/sharing — functionally similar to 'easy withdrawal'. CPRA added opt-in consent for sensitive personal information. But CCPA does not impose equivalent granular conditions for all processing.",
+    ccpaDiff: ["GDPR requires opt-IN for all consent-based processing. CCPA requires only opt-OUT from sale/sharing", "GDPR: no pre-ticked boxes. CCPA: no equivalent prohibition for general data collection", "GDPR: consent must be unbundled (separate from T&Cs). CCPA: no equivalent unbundling requirement", "Both require withdrawal/opt-out to be 'easy'. GDPR requires it be as easy as consenting", "CPRA added opt-in consent for SPI — the only CCPA opt-in requirement outside of minors' data"]
+  },
+  {
+    num: 8, chapter: "II", chapterName: "Principles", name: "Conditions for Child's Consent",
+    summary: "For information society services, consent is valid for children aged 16+. Member states may lower this to 13. Parental/guardian consent is required below the applicable age.",
+    keyPoints: ["Default age of digital consent: 16 years (member states can lower to 13)", "Parental/guardian authorisation required for under-16 (or member state threshold)", "Controllers must make reasonable efforts to verify age and parental consent", "Applies specifically to 'information society services' (websites, apps, platforms)", "Does not apply to preventive/counselling services offered to children"],
+    tags: ["Children", "Age Verification", "Consent", "Parental Consent"], consentRelevance: "Yes",
+    consentDetail: "Any CMP for a digital service must handle age-gating. If the service may be accessed by minors, the CMP must include age verification and parental consent flows.",
+    ccpa: "CCPA/CPRA requires opt-IN consent (not just opt-out) for sale of data of consumers under 16. For under-13, parental consent is required. COPPA (federal law) also applies to US children under 13.",
+    ccpaDiff: ["GDPR default age threshold: 16 (can be lowered to 13). CCPA: 16 for opt-in to sale of minor's data", "Both require parental consent below 13", "GDPR's child consent covers all processing by information society services. CCPA's opt-in only covers sale/sharing of minor's data", "COPPA (US federal law) governs under-13 data collection separately from CCPA", "GDPR requires 'reasonable efforts' to verify age; CCPA has less prescriptive verification standards"]
+  },
+  {
+    num: 9, chapter: "II", chapterName: "Principles", name: "Processing Special Categories of Data",
+    summary: "Prohibits processing of sensitive data categories (health, biometrics, race, religion, political opinions, sexual orientation, union membership, genetic data) unless a specific exception applies.",
+    keyPoints: ["Eight prohibited categories: health, biometric, genetic, racial/ethnic origin, political opinions, religious beliefs, trade union membership, sexual orientation", "Explicit consent is the primary commercial exception (higher standard than standard consent)", "Other exceptions: employment law, vital interests, non-profit bodies, legal claims, public health, research/statistics", "Explicit consent = unambiguous written or equally clear affirmative action specifically for sensitive data"],
+    tags: ["Special Categories", "Sensitive Data", "Explicit Consent", "Health Data"], consentRelevance: "Yes",
+    consentDetail: "Explicit consent for sensitive data requires a separate, distinct consent act — you cannot bundle it with standard consent. CMPs must have dedicated flows for any processing touching special category data.",
+    ccpa: "CPRA (2023) introduced 'Sensitive Personal Information' (SPI): SSNs, financial account data, precise geolocation, racial/ethnic origin, religious beliefs, union membership, health, sexual orientation, biometric data. Consumers can 'limit use' of SPI.",
+    ccpaDiff: ["GDPR: processing special category data is PROHIBITED unless an exception applies. CPRA: SPI can be processed but consumers can limit its use beyond necessary purposes", "GDPR requires explicit consent (active, specific, written-level affirmation). CPRA requires opt-out for SPI use beyond primary purpose", "Both cover health, biometric, racial/ethnic origin, sexual orientation, religious beliefs", "CPRA SPI additionally covers SSNs, financial data, and precise geolocation — not in GDPR's Art. 9"]
+  },
+  {
+    num: 10, chapter: "II", chapterName: "Principles", name: "Processing Criminal Conviction Data",
+    summary: "Processing personal data about criminal convictions and offences may only occur under official authority or with specific safeguards established by member state law.",
+    keyPoints: ["Criminal conviction data requires official authority OR member state law authorisation", "Comprehensive registers of criminal convictions = official authority only", "Consent is NOT a valid basis for processing criminal records in most cases", "Member states must specify the specific safeguards required"],
+    tags: ["Criminal Data", "Special Categories", "Restrictions"], consentRelevance: "No",
+    consentDetail: "Consent is generally not a valid basis here. Not relevant to standard commercial consent and preference management use cases.",
+    ccpa: "CCPA does not create a special regime for criminal conviction data — it is treated as regular personal information if it identifies a California consumer. No official authority requirement exists.",
+    ccpaDiff: ["GDPR: criminal data requires official authority — consent not valid. CCPA: no special restrictions on criminal record data", "CCPA treats criminal record data as regular personal information subject to standard rights", "No CCPA equivalent to GDPR's comprehensive register restriction"]
+  },
+  {
+    num: 11, chapter: "II", chapterName: "Principles", name: "Processing Not Requiring Identification",
+    summary: "If a controller genuinely does not need to identify a data subject to fulfil the processing purpose, it is not obligated to maintain or acquire additional data solely to comply with GDPR data subject rights.",
+    keyPoints: ["If the controller cannot identify the individual, they need not do so for rights compliance", "Data subjects must still be informed (unless disproportionate effort)", "Cannot be used to avoid rights — controller cannot create anonymity to escape obligations", "Relevant for analytics, aggregated data, and anonymised processing"],
+    tags: ["Anonymisation", "Pseudonymisation", "Data Subject Rights"], consentRelevance: "Partial",
+    consentDetail: "Affects CMP design for anonymous browsing. If consent preferences are stored without linking to an identified individual, some GDPR rights obligations are reduced.",
+    ccpa: "CCPA similarly excludes truly de-identified or aggregate consumer information from most obligations. Businesses that properly anonymise data are not required to re-identify it to fulfil consumer requests.",
+    ccpaDiff: ["Both exclude properly anonymised/de-identified data from most obligations", "GDPR: anonymisation is a high bar (cannot be re-identified by any means reasonably likely). CCPA: 'de-identified' requires technical safeguards and business commitments not to re-identify", "GDPR's pseudonymisation reduces risk but data remains personal. CCPA does not have an equivalent pseudonymisation framework"]
+  },
+  {
+    num: 12, chapter: "III", chapterName: "Rights of the Data Subject", name: "Transparent Information and Communication",
+    summary: "Controllers must provide information in a concise, transparent, intelligible, and easily accessible form using clear and plain language — especially for children.",
+    keyPoints: ["Information must be concise, transparent, intelligible, easily accessible", "Must use clear and plain language (especially when addressed to children)", "Information is provided free of charge", "Response to data subject requests: within one month (extendable to three months)", "If unable to act on a request, must explain why within one month"],
+    tags: ["Transparency", "Communication", "Data Subject Rights", "CMP"], consentRelevance: "Yes",
+    consentDetail: "Transparency is a prerequisite for valid consent — consent cannot be 'informed' without clear communication. All CMP notices and privacy notices must meet Art. 12 standards: layered notices, plain language, accessible.",
+    ccpa: "CCPA requires privacy notices to be written in plain language and conspicuously posted. CCPA requires businesses to respond to verifiable consumer requests within 45 days (extendable by another 45 days).",
+    ccpaDiff: ["GDPR: 1-month response window (extendable to 3 months). CCPA: 45 days to respond (extendable by 45 days)", "Both require plain language and accessibility", "GDPR explicitly requires information adapted 'especially' for children. CCPA doesn't include this specific requirement", "GDPR: information must be provided free of charge. CCPA: same principle but businesses can charge for excessive requests"]
+  },
+  {
+    num: 13, chapter: "III", chapterName: "Rights of the Data Subject", name: "Information Provided on Direct Collection",
+    summary: "When collecting personal data directly from individuals, controllers must provide specific information at the time of collection: identity, purposes, legal basis, retention period, rights, and more.",
+    keyPoints: ["Controller's identity and contact details (and DPO if applicable)", "Purposes AND legal basis for each processing activity", "Legitimate interests pursued (if that basis is used)", "Third-party recipients or categories thereof", "Transfers to third countries and safeguards used", "Retention period or criteria for determining it", "All data subject rights available", "Right to withdraw consent (where applicable)", "Right to lodge a complaint with a supervisory authority"],
+    tags: ["Transparency", "Privacy Notice", "Consent", "Legal Basis"], consentRelevance: "Yes",
+    consentDetail: "When consent is the legal basis, Art. 13 requires explicitly stating this AND the right to withdraw consent. Privacy notices embedded in consent flows must include all Art. 13 elements.",
+    ccpa: "CCPA's 'Notice at Collection' (§1798.100) and Privacy Policy requirements are analogous. Businesses must disclose categories of personal information collected and purposes at or before collection.",
+    ccpaDiff: ["GDPR: must disclose the specific legal basis for each processing activity. CCPA: no legal basis disclosure required", "GDPR: must state retention period or criteria. CCPA: not required in notice at collection", "Both require stating categories of data and purposes", "GDPR: must mention right to withdraw consent if consent is the basis. CCPA: must mention opt-out of sale/sharing"]
+  },
+  {
+    num: 14, chapter: "III", chapterName: "Rights of the Data Subject", name: "Information When Data Not Collected Directly",
+    summary: "Where personal data is obtained from a third party, the controller must still provide the Art. 13 information, generally within one month of obtaining the data.",
+    keyPoints: ["Same information as Art. 13 must be provided", "Must be provided within one month of obtaining the data", "Or at the time of first contact with the data subject", "Or at the time of first disclosure to another recipient", "Exceptions: disproportionate effort, data subject already has the info, legal obligation requires confidentiality"],
+    tags: ["Third-party Data", "Transparency", "Data Brokers", "Notification"], consentRelevance: "Partial",
+    consentDetail: "Where third-party data is processed on consent obtained elsewhere (e.g., data brokers), controllers must verify that consent was validly obtained and then inform data subjects.",
+    ccpa: "CCPA requires disclosing categories of third-party sources in the Privacy Policy. However, CCPA does not require individual notification within one month — the focus is on systemic transparency in the Privacy Policy.",
+    ccpaDiff: ["GDPR: individual notification required within one month of obtaining third-party data. CCPA: Privacy Policy disclosure of source categories is sufficient", "GDPR applies to each individual whose data is obtained indirectly. CCPA requires aggregate disclosure in Privacy Policy", "Both require disclosing that data was obtained from third parties"]
+  },
+  {
+    num: 15, chapter: "III", chapterName: "Rights of the Data Subject", name: "Right of Access",
+    summary: "Data subjects have the right to obtain confirmation of whether their data is processed, access to the personal data itself, and comprehensive information about the processing.",
+    keyPoints: ["Confirmation whether personal data is processed", "Copy of the personal data being processed", "Purposes, categories, recipients, retention period", "Rights available (rectification, erasure, restriction, objection)", "Right to lodge a complaint with a supervisory authority", "Source of the data if not collected directly", "Information about automated decision-making including profiling", "First copy must be provided free of charge"],
+    tags: ["Access Rights", "DSAR", "Transparency", "Data Subject Rights"], consentRelevance: "Yes",
+    consentDetail: "Data subjects can access records of what consents they have given. CMPs must support DSAR fulfilment by surfacing stored consent records. OneTrust's DSAR module is designed for this.",
+    ccpa: "CCPA §1798.110 grants consumers the right to know what personal information is collected, used, shared, or sold. Response required within 45 days. CCPA adds a unique element: the right to know to whom data was sold.",
+    ccpaDiff: ["GDPR: right to a copy of the actual data. CCPA: right to know categories AND specific pieces", "GDPR: 1 month to respond. CCPA: 45 days to respond", "CCPA requires disclosing to whom data was sold (third parties) — specific to its sale/sharing model", "Both require identity verification before fulfilling access requests", "GDPR: access is an ongoing right. CCPA: originally limited to twice per 12 months; CPRA removed this limit"]
+  },
+  {
+    num: 16, chapter: "III", chapterName: "Rights of the Data Subject", name: "Right to Rectification",
+    summary: "Data subjects have the right to request correction of inaccurate personal data and completion of incomplete data, without undue delay.",
+    keyPoints: ["Right to correct inaccurate personal data", "Right to complete incomplete personal data", "Must be fulfilled without undue delay", "Data subject may provide a supplementary statement to complete data", "Controller must notify all recipients of the correction (Art. 19)"],
+    tags: ["Data Accuracy", "Rectification", "Data Subject Rights"], consentRelevance: "Partial",
+    consentDetail: "Preference management systems storing user profiles or communication preferences must allow users to correct inaccurate information.",
+    ccpa: "CPRA §1798.106 (effective 2023) added the right to correct inaccurate personal information — this right did not exist in the original CCPA. CPRA's right to correct is now substantially equivalent to GDPR Art. 16.",
+    ccpaDiff: ["Original CCPA had no right to rectification. CPRA (2023) added it — narrowing the gap with GDPR", "Both rights now cover correction of inaccurate personal data", "GDPR requires response within one month. CCPA/CPRA requires response within 45 days", "Both require notifying downstream recipients of corrections made"]
+  },
+  {
+    num: 17, chapter: "III", chapterName: "Rights of the Data Subject", name: "Right to Erasure ('Right to be Forgotten')",
+    summary: "Data subjects can request deletion of their personal data in specific circumstances: data no longer necessary, consent withdrawn, unlawful processing, successful objection, or legal obligation.",
+    keyPoints: ["Data no longer necessary for the original purpose", "Consent is withdrawn and no other legal basis exists", "Data subject objects (Art. 21) and no overriding legitimate grounds exist", "Processing was unlawful", "Legal obligation requires erasure", "Controller must also inform recipients and take steps for publicly available data", "Exceptions: freedom of expression, legal obligation, public interest, scientific/historical research, legal claims"],
+    tags: ["Right to be Forgotten", "Erasure", "Consent Withdrawal", "Data Subject Rights"], consentRelevance: "Yes",
+    consentDetail: "Withdrawal of consent triggers an erasure obligation under Art. 17(1)(b) — if consent was the only legal basis. CMPs must be configured so consent withdrawal triggers a deletion workflow for previously collected data.",
+    ccpa: "CCPA §1798.105 grants consumers the right to request deletion. CCPA has more exceptions than GDPR Art. 17. Businesses, service providers, and contractors must all delete upon verified request.",
+    ccpaDiff: ["GDPR: erasure triggered by withdrawal of consent. CCPA: deletion right exists independently of any legal basis — consumers simply request it", "CCPA has more exceptions (completing transactions, security, legal obligations, internal uses consumers might reasonably expect)", "Both require notifying downstream processors/service providers to also delete", "GDPR's right is broader in concept but CCPA's is easier to exercise (no legal basis withdrawal required)"]
+  },
+  {
+    num: 18, chapter: "III", chapterName: "Rights of the Data Subject", name: "Right to Restriction of Processing",
+    summary: "Data subjects can request that processing be paused/restricted in four specific situations: contested accuracy, unlawful processing, legal claims, or pending objection assessment.",
+    keyPoints: ["Contested accuracy: restrict during verification period", "Unlawful processing: data subject opposes erasure and requests restriction instead", "Controller no longer needs data but data subject needs it for legal claims", "Data subject has objected (Art. 21): restrict during the balancing assessment", "During restriction: can store data but not actively process it", "Must notify data subject before lifting restriction"],
+    tags: ["Restriction", "Data Subject Rights", "Objection"], consentRelevance: "Partial",
+    consentDetail: "When a data subject contests accuracy of data processed under consent, processing must be restricted during verification. Less central to CMP workflows than erasure.",
+    ccpa: "CCPA has no equivalent 'right to restrict' processing. The closest analogues are the opt-out from sale/sharing and CPRA's right to limit use of sensitive personal information.",
+    ccpaDiff: ["GDPR has an explicit right to restrict processing (pause but not delete). CCPA has no equivalent", "CCPA's opt-out from sale/sharing partially parallels restriction but applies only to data sale, not all processing", "CPRA's SPI limitation right is the closest CCPA analogue — limits use beyond primary purpose", "This is one area where GDPR provides significantly stronger individual control than CCPA"]
+  },
+  {
+    num: 19, chapter: "III", chapterName: "Rights of the Data Subject", name: "Notification Obligation (Rectification/Erasure/Restriction)",
+    summary: "Controllers must notify each recipient who received the personal data about any rectification, erasure, or restriction, unless this is impossible or involves disproportionate effort.",
+    keyPoints: ["Must inform all recipients who received the data", "Covers rectification (Art. 16), erasure (Art. 17), and restriction (Art. 18)", "Exception for impossible or disproportionate effort", "Data subject has the right to know who these recipients are", "Requires understanding the full data-sharing chain (data flow mapping)"],
+    tags: ["Notification", "Data Recipients", "Data Flow", "Data Subject Rights"], consentRelevance: "Partial",
+    consentDetail: "When consent is withdrawn and erasure triggered, controllers must notify all downstream processors and third-party recipients (ad networks, analytics vendors, email platforms).",
+    ccpa: "CCPA requires businesses to direct service providers and contractors to delete data upon receiving a verified consumer deletion request. Less explicit about notifying individual recipients.",
+    ccpaDiff: ["GDPR: proactive duty to notify all recipients of rights exercised. CCPA: duty to instruct service providers/contractors to delete", "GDPR notification obligation extends to all recipients; CCPA obligation stays within the service provider/contractor relationship", "CCPA 'third parties' (who received data in a sale) are not subject to the same deletion instruction obligation as service providers"]
+  },
+  {
+    num: 20, chapter: "III", chapterName: "Rights of the Data Subject", name: "Right to Data Portability",
+    summary: "Where processing is based on consent or contract and carried out by automated means, data subjects have the right to receive their data in a structured, machine-readable format and transmit it to another controller.",
+    keyPoints: ["Applies ONLY to consent-based or contract-based processing", "Applies ONLY to automated processing (not manual files)", "Data must be in structured, commonly used, machine-readable format (e.g., JSON, CSV)", "Right to transmit directly from one controller to another where technically feasible", "Does not apply where processing is for public interest or legal obligations", "Portability does not erase the data from the original controller"],
+    tags: ["Data Portability", "Consent", "Interoperability", "Data Subject Rights"], consentRelevance: "Yes",
+    consentDetail: "Portability applies specifically when consent (or contract) is the legal basis. CMPs and preference management systems storing user data on a consent basis must support portability.",
+    ccpa: "CCPA §1798.100 grants the right to receive personal information in a portable format upon request. CCPA does not limit portability to consent-based processing — it applies broadly to all personal information businesses collect.",
+    ccpaDiff: ["GDPR portability: only for consent or contract-based automated processing. CCPA: applies to all collected personal information", "GDPR: includes right to direct controller-to-controller transmission. CCPA: does not include direct transmission right", "GDPR portability is narrower in trigger but stronger in mechanism. CCPA is broader in trigger but weaker in mechanism", "Both require machine-readable format"]
+  },
+  {
+    num: 21, chapter: "III", chapterName: "Rights of the Data Subject", name: "Right to Object",
+    summary: "Data subjects may object to processing based on legitimate interests or direct marketing at any time. Objection to direct marketing must always be honoured immediately and unconditionally.",
+    keyPoints: ["Objection to legitimate interests processing: controller must stop unless compelling legitimate grounds override", "Objection to direct marketing: ABSOLUTE — no balancing test, must always be respected", "Objection to research/statistical purposes: must be respected unless processing is for public interest", "Objection must be at first communication (for direct marketing)", "Right must be explicitly communicated to data subjects at first contact"],
+    tags: ["Right to Object", "Direct Marketing", "Legitimate Interests", "Opt-out"], consentRelevance: "Yes",
+    consentDetail: "The absolute right to object to direct marketing is the GDPR foundation for email preference centres and marketing opt-outs. Every email unsubscribe mechanism operationalises Art. 21.",
+    ccpa: "CCPA's opt-out from sale/sharing of personal information (the 'Do Not Sell or Share My Personal Information' link) is the functional equivalent in the advertising context. CPRA added opt-out from 'sharing' specifically addressing targeted advertising.",
+    ccpaDiff: ["GDPR Art. 21 objection to direct marketing = ABSOLUTE right. CCPA opt-out from sale = required by law but only covers 'sale or sharing'", "GDPR objection covers ALL marketing uses under legitimate interests. CCPA opt-out specifically targets sale/sharing with third parties", "CPRA's opt-out from sharing (targeted advertising) is the closest parallel to GDPR's objection to profiling for advertising", "GDPR: objection right for legitimate interests requires a balancing test by the controller. CCPA: no balancing test — opt-out from sale is non-negotiable"]
+  },
+  {
+    num: 22, chapter: "III", chapterName: "Rights of the Data Subject", name: "Automated Decision-Making, Including Profiling",
+    summary: "Data subjects have the right not to be subject to solely automated decisions producing significant legal or similar effects, unless based on consent, contract, or EU law. Where permitted, human review rights must be given.",
+    keyPoints: ["Prohibition on decisions based solely on automated processing with significant effects", "Significant effects include legal effects or 'similarly significantly' effects (e.g., loan refusal, job screening, insurance pricing)", "Exceptions: consent, contract necessity, or EU/member state law", "Where permitted: right to obtain human intervention, express point of view, and contest the decision", "Special category data in profiling = requires explicit consent or substantial public interest"],
+    tags: ["Automated Decisions", "Profiling", "AI", "Explicit Consent"], consentRelevance: "Yes",
+    consentDetail: "Explicit consent is one of the valid bases for automated decision-making with significant effects. If AI-driven profiling relies on consent, the CMP must capture this as a distinct, explicit consent layer.",
+    ccpa: "CPRA directed the CPPA to develop regulations on automated decision-making technology and profiling. CPPA's rulemaking is ongoing. Original CCPA had no equivalent — this is CPRA's biggest expansion in the GDPR's direction.",
+    ccpaDiff: ["GDPR Art. 22 is active law. CPRA's automated decision-making regulations are still being developed", "GDPR provides specific individual rights (human review, contest decision). CPRA's rights scope is TBD via regulation", "Both address the need for human oversight of consequential AI decisions", "This gap between GDPR and CCPA is rapidly narrowing as CPPA rulemaking progresses"]
+  },
+  {
+    num: 23, chapter: "III", chapterName: "Rights of the Data Subject", name: "Restrictions",
+    summary: "Member states may restrict GDPR obligations and data subject rights by legislation where necessary for national security, public safety, criminal investigations, or protection of rights of others.",
+    keyPoints: ["Restrictions must be enacted by member state legislation — not by controller decision", "Covers national security, public safety, crime prevention, judicial independence", "Also covers important economic/financial interests, regulatory functions, protection of data subjects", "Restrictions must include specific safeguards", "Cannot be used by private companies to avoid compliance"],
+    tags: ["Restrictions", "Member State Law", "Exemptions", "National Security"], consentRelevance: "No",
+    consentDetail: "Art. 23 restrictions are state-imposed legislative limitations — not relevant to standard commercial consent and preference management operations.",
+    ccpa: "CCPA includes various exemptions — for HIPAA-regulated health data, FCRA-regulated credit data, GLBA-regulated financial data, law enforcement, and other regulated sectors.",
+    ccpaDiff: ["GDPR Art. 23: restrictions require member state legislation. CCPA: sectoral exemptions are built into the statute itself", "CCPA's sectoral exemptions (HIPAA, FCRA, GLBA) are more specific and pre-defined. GDPR gives member states discretion to create restrictions", "CCPA's employee and B2B data exemptions have no direct GDPR equivalent"]
+  },
+  {
+    num: 24, chapter: "IV", chapterName: "Controller and Processor", name: "Responsibility of the Controller",
+    summary: "Controllers must implement appropriate technical and organisational measures (TOMs) to ensure and demonstrate compliance with GDPR, considering the nature, scope, context, and purpose of processing.",
+    keyPoints: ["Accountability principle in action — must be able to DEMONSTRATE compliance", "Appropriate TOMs must be implemented and reviewed regularly", "Adherence to approved codes of conduct or certification schemes can demonstrate compliance", "TOMs must consider nature, scope, context, purpose, and risks of the processing", "Policies must be implemented proportionate to processing activities"],
+    tags: ["Accountability", "TOMs", "Controller", "Compliance Demonstration"], consentRelevance: "Yes",
+    consentDetail: "Deploying and maintaining a CMP is itself a TOM demonstrating accountability. Controllers must be able to show consent was validly obtained — requiring documented processes, CMP audit logs, consent records, and version history of consent notices.",
+    ccpa: "CCPA does not explicitly require 'appropriate TOMs' in the GDPR sense. CPRA required the CPPA to develop regulations on risk assessments. The accountability/demonstration framework is far less explicit under US law.",
+    ccpaDiff: ["GDPR: explicit accountability principle requiring active demonstration of compliance. CCPA: no equivalent proactive demonstration requirement", "GDPR TOMs must be documented and regularly reviewed. CCPA's 'reasonable security' standard is less prescriptive", "CPRA risk assessments (in development) will partially close this gap", "GDPR: codes of conduct and certifications (e.g., ISO 27701) can demonstrate compliance. CCPA: no equivalent certification scheme recognized by the statute"]
+  },
+  {
+    num: 25, chapter: "IV", chapterName: "Controller and Processor", name: "Data Protection by Design and by Default",
+    summary: "Controllers must implement data protection principles at the design stage (by design) and ensure by default only data necessary for each specific purpose is processed (by default).",
+    keyPoints: ["Privacy by Design: integrate data protection into system architecture from the start", "Privacy by Default: default settings must be the most privacy-protective option", "No pre-ticked consent boxes — this flows directly from 'by default'", "Data minimisation must be built into the system, not an afterthought", "Appropriate TOMs must be implemented at design time and updated as technology evolves", "Applies to the entire processing lifecycle"],
+    tags: ["Privacy by Design", "Privacy by Default", "Data Minimisation", "CMP Design"], consentRelevance: "Yes",
+    consentDetail: "'By default' directly prohibits opt-out consent models. CMPs must default to no consent until actively given. This article drives the requirement for opt-IN consent mechanisms and granular purpose-level controls in CMP design.",
+    ccpa: "CCPA does not codify privacy by design or privacy by default. CPRA directed the CPPA to develop regulations that may incorporate these principles. No mandatory equivalent currently exists under California law.",
+    ccpaDiff: ["GDPR Art. 25 = hard legal obligation. CCPA/CPRA: no equivalent mandatory privacy by design requirement", "CCPA's opt-out model is structurally the opposite of GDPR's 'by default' opt-in — the defaults are different", "CPRA rulemaking may introduce privacy by design elements but they aren't yet in force", "Privacy by design is a GDPR requirement for system architects. In the US, it is a best practice, not law"]
+  },
+  {
+    num: 26, chapter: "IV", chapterName: "Controller and Processor", name: "Joint Controllers",
+    summary: "Where two or more controllers jointly determine purposes and means of processing, they are joint controllers. They must establish their respective responsibilities via a transparent arrangement.",
+    keyPoints: ["Joint controllers = jointly determine purposes AND means of processing (both elements required)", "Must establish an arrangement defining their respective responsibilities", "Arrangement must reflect actual division of responsibilities — not just a formality", "Data subjects can exercise rights against each joint controller", "Arrangement must be available to data subjects upon request (essence of it)", "Each joint controller can still be held fully liable"],
+    tags: ["Joint Controllers", "Liability", "Controller", "Ad Tech"], consentRelevance: "Partial",
+    consentDetail: "In ad tech and consent management, where a publisher and an advertising platform jointly determine how consent signals (TCF strings) are used, they may be joint controllers. The CJEU Facebook Fanpage ruling confirmed this.",
+    ccpa: "CCPA does not have a 'joint controller' concept. It distinguishes between 'businesses', 'service providers' (processors), 'contractors', and 'third parties'. Two entities could both qualify as 'businesses' but CCPA doesn't create a joint responsibility framework.",
+    ccpaDiff: ["GDPR has explicit joint controller framework with liability allocation. CCPA has no equivalent", "In practice, ad tech partnerships under GDPR require a DPA or joint controller agreement. Under CCPA, the key question is whether the recipient is a service provider or a third party (received data via a 'sale')", "CCPA's business/service provider distinction focuses on who controls data use after transfer. GDPR's joint controller focuses on who decides purposes and means"]
+  },
+  {
+    num: 27, chapter: "IV", chapterName: "Controller and Processor", name: "Representatives of Non-EU Controllers",
+    summary: "Non-EU controllers and processors subject to GDPR must designate an EU representative as a contact point for supervisory authorities and data subjects.",
+    keyPoints: ["Mandatory for non-EU controllers/processors subject to GDPR (Art. 3(2))", "Representative must be in a member state where data subjects are located", "Representative acts on behalf of the controller/processor for DPA communications", "Exemptions: occasional processing, no special category data, unlikely to risk individuals' rights", "Does not reduce the controller's or processor's own liability"],
+    tags: ["EU Representative", "Non-EU Controllers", "Regulatory Contact"], consentRelevance: "No",
+    consentDetail: "An administrative/jurisdictional requirement. Not relevant to the content of consent management systems.",
+    ccpa: "CCPA does not require a California representative for out-of-state businesses. Compliance obligations apply regardless through California courts and the CPPA.",
+    ccpaDiff: ["GDPR: mandatory EU representative for non-EU controllers subject to GDPR. CCPA: no equivalent representative requirement", "CCPA enforcement happens through CPPA and AG investigations/litigation — no representative needed", "This is primarily an enforcement mechanism difference"]
+  },
+  {
+    num: 28, chapter: "IV", chapterName: "Controller and Processor", name: "Processor Obligations and Data Processing Agreements",
+    summary: "Processors must only process on documented controller instructions. Data Processing Agreements (DPAs) are mandatory between controller and processor, covering subject matter, nature, purpose, data type, duration, and all processor obligations.",
+    keyPoints: ["Processor must act only on documented controller instructions", "Mandatory DPA covering: subject matter, nature and purpose, type of personal data, categories of data subjects, duration", "Processor obligations in DPA: confidentiality, security (Art. 32), DPIAs support, deletion/return of data", "Sub-processors can only be engaged with controller's prior written authorisation", "Processor becomes a controller if it processes outside the instructions", "DPA can be a standard contractual template or bespoke agreement"],
+    tags: ["Processor", "DPA", "Data Processing Agreement", "Sub-processor", "Vendor Management"], consentRelevance: "Yes",
+    consentDetail: "CMP vendors (e.g., OneTrust, Cookiebot, TrustArc) acting as processors must have a DPA with the controller. Essential due diligence step in any CMP deployment — without a DPA, the controller cannot legally use the CMP.",
+    ccpa: "CCPA/CPRA requires written contracts with service providers and contractors that restrict the use of personal information. CPRA strengthened this with specific mandatory contract terms. Functionally similar to GDPR DPAs but with different terminology.",
+    ccpaDiff: ["GDPR: DPA has extensive mandatory content requirements (Art. 28(3) lists 8+ obligations). CCPA: written contract with specific restrictions on use — less prescriptive but increasingly detailed under CPRA", "GDPR: sub-processor chain requires controller authorisation. CCPA: service providers may share with contractors with appropriate contracts", "GDPR DPA = mandatory in all controller-processor relationships. CCPA contract = required for service provider and contractor relationships", "Both frameworks require that vendors delete data upon contract termination"]
+  },
+  {
+    num: 29, chapter: "IV", chapterName: "Controller and Processor", name: "Processing Under Controller/Processor Authority",
+    summary: "Processors and all persons acting under the controller's or processor's authority may only process personal data on instructions from the controller, unless legally required to act otherwise.",
+    keyPoints: ["Processors and their employees bound by controller instructions", "CMP vendors cannot use consent data for their own purposes", "Exception: legal obligation requires the processor to act outside instructions", "Reinforces the chain of liability in controller-processor relationships", "Key safeguard against unauthorised secondary use of data by vendors"],
+    tags: ["Processor Obligations", "Instructions", "Authorised Processing"], consentRelevance: "Partial",
+    consentDetail: "Reinforces that CMP vendors cannot use collected consent data for their own research or product improvement without separate controller authorisation. Critical when evaluating CMP vendor contracts.",
+    ccpa: "CCPA's service provider restrictions similarly prohibit service providers from using personal information for their own commercial purposes outside the contracted service. CPRA strengthened this — service providers cannot combine data from multiple clients.",
+    ccpaDiff: ["Functionally similar restrictions exist in both frameworks", "GDPR Art. 29 is a short, high-level principle. CCPA/CPRA service provider restrictions are more detailed in the statute", "CPRA explicitly prohibits combining data from multiple clients — this cross-context prohibition has no direct GDPR Art. 29 equivalent (though Art. 5 purpose limitation achieves a similar result)"]
+  },
+  {
+    num: 30, chapter: "IV", chapterName: "Controller and Processor", name: "Records of Processing Activities (ROPA)",
+    summary: "Controllers with 250+ employees (or processing high-risk, regular, or sensitive data) must maintain written records of processing activities (ROPA), covering controller details, purposes, data categories, recipients, transfers, retention, and security.",
+    keyPoints: ["Mandatory for: 250+ employees, OR regular processing of special category/criminal data, OR processing likely to risk individuals' rights", "Controller ROPA must include: controller details, DPO, purposes, categories of data subjects and data, recipients, third-country transfers, retention periods, security measures", "Processor ROPA must include: processor details, controller details, categories of processing, third-country transfers, security measures", "Must be in writing (including electronic form)", "Must be made available to supervisory authority on request"],
+    tags: ["ROPA", "Records", "Accountability", "Documentation"], consentRelevance: "Yes",
+    consentDetail: "Consent-based processing activities must be documented in the ROPA with legal basis specified as consent. The record must describe the consent mechanism, state retention periods, and be updated when consent notices change.",
+    ccpa: "CCPA does not require a formal ROPA. However, to respond to 'right to know' requests, equivalent record-keeping must exist internally. CPRA directed CPPA regulations that may introduce more explicit record-keeping requirements.",
+    ccpaDiff: ["GDPR: formal ROPA is a legal requirement. CCPA: no formal record of processing requirement", "GDPR ROPA must include legal basis for each activity. CCPA: no legal basis documentation needed", "CCPA's right-to-know response obligation implicitly requires similar data mapping, but no formal structured record is mandated"]
+  },
+  {
+    num: 31, chapter: "IV", chapterName: "Controller and Processor", name: "Cooperation with the Supervisory Authority",
+    summary: "Controllers, processors, and their representatives must cooperate with supervisory authorities (DPAs) on request in the performance of their tasks.",
+    keyPoints: ["Mandatory cooperation with Data Protection Authorities (DPAs)", "Applies to controllers, processors, and EU representatives", "DPAs can request access to records, premises, and personnel", "Failure to cooperate is itself a GDPR violation (fines under Art. 83)", "Does not override legal professional privilege"],
+    tags: ["DPA", "Supervisory Authority", "Regulatory Cooperation", "Enforcement"], consentRelevance: "No",
+    consentDetail: "General regulatory cooperation obligation. However, DPA investigations frequently focus on consent practices — well-maintained CMP audit logs and consent records are essential evidence.",
+    ccpa: "CCPA is enforced by the CPPA and California AG. Businesses must cooperate with civil investigations. CPPA has authority to conduct audits and investigations.",
+    ccpaDiff: ["Both frameworks require cooperation with enforcement authorities", "GDPR: single supervisory authority (DPA) per member state with clear mandate. CCPA: CPPA + California AG with concurrent enforcement authority", "GDPR DPAs can conduct cross-border investigations (one-stop-shop). CPPA is California-only", "GDPR fines for non-cooperation can reach €10M or 2% of global turnover"]
+  },
+  {
+    num: 32, chapter: "IV", chapterName: "Controller and Processor", name: "Security of Processing",
+    summary: "Controllers and processors must implement appropriate technical and organisational security measures based on risk: encryption, pseudonymisation, confidentiality, integrity, availability, and regular testing.",
+    keyPoints: ["Risk-based approach: security measures must be appropriate to the risk", "Specific measures to consider: pseudonymisation + encryption, ongoing confidentiality/integrity/availability", "Ability to restore availability and access after incidents", "Regular testing and evaluation of security measure effectiveness", "Both controller AND processor have independent security obligations", "Employees must be trained and bound by confidentiality"],
+    tags: ["Security", "Encryption", "TOMs", "Pseudonymisation", "Risk"], consentRelevance: "Partial",
+    consentDetail: "Consent records and preference data are personal data and must be stored securely. CMPs must implement appropriate security (encryption at rest/in transit, access controls, audit logging) for consent databases.",
+    ccpa: "CCPA §1798.150 / CPRA provides consumers a private right of action for breaches of unencrypted/unredacted personal information resulting from failure to implement reasonable security.",
+    ccpaDiff: ["GDPR: security obligation falls on both controller and processor independently. CCPA: 'reasonable security' obligation on businesses; service providers inherit via contract", "CCPA's private right of action for security breaches (statutory damages $100–$750/consumer/incident) creates strong litigation risk — GDPR has no equivalent private right of action", "GDPR specifies security measures (encryption, pseudonymisation, testing). CCPA's 'reasonable security' standard references CIS Controls / NIST frameworks"]
+  },
+  {
+    num: 33, chapter: "IV", chapterName: "Controller and Processor", name: "Breach Notification to Supervisory Authority",
+    summary: "Controllers must notify the competent supervisory authority of a personal data breach within 72 hours of becoming aware, where the breach is likely to result in risk to individuals' rights and freedoms.",
+    keyPoints: ["72-hour notification window from the moment of becoming aware", "Notification only required if breach is 'likely to result in a risk' to individuals", "Low-risk breaches: document internally, no DPA notification required", "Notification must include: nature of breach, categories and approximate number affected, likely consequences, measures taken", "If 72 hours is not met, must provide reasons for the delay", "Processor must notify controller 'without undue delay' upon discovering a breach"],
+    tags: ["Data Breach", "72-hour Rule", "Incident Response", "DPA Notification"], consentRelevance: "Partial",
+    consentDetail: "A breach of a CMP or consent database (exposing consent preferences, email addresses, device identifiers) is a personal data breach triggering Art. 33. Consent data is personal data — CMP infrastructure breaches are in scope.",
+    ccpa: "California's data breach notification law (California Civil Code §1798.29 / §1798.82) requires notification to affected individuals and the California AG (if 500+ Californians affected). Notification must be made 'in the most expedient time possible and without unreasonable delay'.",
+    ccpaDiff: ["GDPR: notify the DPA within 72 hours. California law: notify affected individuals 'without unreasonable delay' (no fixed hour requirement)", "GDPR: notification goes to the DPA first, then potentially individuals (Art. 34). California: notification goes to affected individuals directly", "GDPR: lower-risk breaches don't require DPA notification. California law: triggers are based on specific data types (SSN, financial account, etc.) not a risk threshold", "CCPA's private right of action for breaches creates litigation risk on top of regulatory enforcement"]
+  },
+  {
+    num: 34, chapter: "IV", chapterName: "Controller and Processor", name: "Breach Communication to Data Subjects",
+    summary: "When a breach is likely to result in HIGH risk to data subjects, the controller must also notify those individuals directly, without undue delay, using clear and plain language.",
+    keyPoints: ["Threshold: HIGH risk to individuals' rights and freedoms (higher than Art. 33 threshold)", "Must communicate: nature of breach, DPO contact, likely consequences, measures taken, steps data subjects should take", "Exception 1: effective technical measures were in place (e.g., encryption rendered data unintelligible)", "Exception 2: subsequent measures eliminate the high risk", "Exception 3: would involve disproportionate effort (use public communication instead)", "DPA can compel notification even if controller believes exceptions apply"],
+    tags: ["Data Breach", "Individual Notification", "High Risk", "Incident Response"], consentRelevance: "Partial",
+    consentDetail: "If a CMP/preference management system breach is high-risk (e.g., exposure of health-related preferences, political newsletter sign-ups, or sexual orientation inferences), affected individuals must be directly notified.",
+    ccpa: "California breach notification law requires individual notification whenever specific data types are breached (SSN, financial account + security code, medical info, health insurance info, login credentials, biometric data). No 'high risk' balancing test — if the data type is listed, notify.",
+    ccpaDiff: ["GDPR: individual notification requires 'high risk' assessment (risk-based). California: individual notification triggered by specific data type categories (type-based)", "GDPR: encryption exception reduces notification obligation. California: encryption exception eliminates the notification obligation entirely", "GDPR: DPA can compel notification. California AG can also pursue enforcement but no equivalent 'compel' mechanism", "CCPA adds private right of action for statutory damages ($100–$750/consumer/incident) — GDPR has no private right of action"]
+  },
+  {
+    num: 35, chapter: "IV", chapterName: "Controller and Processor", name: "Data Protection Impact Assessment (DPIA)",
+    summary: "A DPIA is mandatory before undertaking processing likely to result in high risk — including systematic profiling, large-scale processing of special category data, and systematic monitoring of public areas.",
+    keyPoints: ["Mandatory when processing is 'likely to result in a high risk': systematic profiling, large-scale special category data processing, systematic monitoring of public areas", "DPAs publish lists of processing types requiring DPIAs (mandatory lists) and types that don't (exception lists)", "DPIA must include: systematic description, assessment of necessity/proportionality, assessment of risks, mitigation measures", "DPO must be consulted in the DPIA process", "If high risk remains after mitigation, must consult supervisory authority (Art. 36 prior consultation)", "DPIA should be reviewed when risk changes"],
+    tags: ["DPIA", "Risk Assessment", "High Risk Processing", "Profiling", "DPO"], consentRelevance: "Yes",
+    consentDetail: "DPIAs should assess whether consent is the appropriate legal basis for high-risk processing — is consent genuinely freely given given any power imbalance? CMP deployments involving systematic profiling, targeting of vulnerable groups, or sensitive data processing require DPIAs.",
+    ccpa: "CPRA directed the CPPA to require risk assessments for businesses whose processing poses significant privacy risks — the closest US equivalent to DPIAs. CPPA rulemaking on risk assessments is ongoing.",
+    ccpaDiff: ["GDPR Art. 35 DPIAs = active mandatory law. CPRA risk assessments = regulatory rules in development", "GDPR DPIA: mandatory for specific processing types, regardless of business size. CPRA: will likely apply to businesses meeting thresholds", "GDPR DPIA: DPO must be consulted; Art. 36 prior consultation may be required. CPRA: DPO equivalent not yet required under US law", "Both require assessing risks, necessity, proportionality, and mitigation measures", "When CPPA finalises risk assessment rules, this will be one of the strongest points of convergence between GDPR and CCPA"]
+  }
+];
+
+const CHAPTER_COLORS = {
+  "I":   { bg: "#e8f4fd", accent: "#1565c0", light: "#bbdefb" },
+  "II":  { bg: "#f3e5f5", accent: "#7b1fa2", light: "#e1bee7" },
+  "III": { bg: "#e8f5e9", accent: "#2e7d32", light: "#c8e6c9" },
+  "IV":  { bg: "#fff8e1", accent: "#e65100", light: "#ffe0b2" },
+};
+
+const RELEVANCE_STYLE = {
+  "Yes":     { bg: "#d4edda", color: "#155724", border: "#c3e6cb", label: "✓ Direct" },
+  "Partial": { bg: "#fff3cd", color: "#856404", border: "#ffeeba", label: "~ Partial" },
+  "No":      { bg: "#f8d7da", color: "#721c24", border: "#f5c6cb", label: "✗ N/A" },
+};
+
+const { useState, useEffect, useRef } = React;
+
+function ArticleCard({ article, onClick, isSelected }) {
+  const ch = CHAPTER_COLORS[article.chapter] || CHAPTER_COLORS["I"];
+  const rel = RELEVANCE_STYLE[article.consentRelevance];
+  return (
+    <div onClick={() => onClick(article)} style={{
+      cursor: "pointer", borderRadius: 8,
+      border: isSelected ? `2px solid ${ch.accent}` : "1.5px solid #e8e8e8",
+      background: isSelected ? ch.bg : "#fff",
+      padding: "9px 12px", marginBottom: 5,
+      transition: "all 0.15s",
+      boxShadow: isSelected ? `0 2px 10px ${ch.accent}28` : "0 1px 2px #0001",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{
+          fontWeight: 800, fontSize: 12, color: ch.accent,
+          background: ch.light, borderRadius: 5, padding: "2px 7px", minWidth: 38, textAlign: "center"
+        }}>Art.{article.num}</span>
+        <span style={{ fontWeight: 600, fontSize: 12, color: "#1a1a2e", flex: 1, lineHeight: 1.35 }}>
+          {article.name}
+        </span>
+        <span style={{ fontSize: 10, fontWeight: 700, borderRadius: 8, padding: "2px 6px",
+          background: rel.bg, color: rel.color, whiteSpace: "nowrap", border: `1px solid ${rel.border}`
+        }}>{rel.label}</span>
+      </div>
+    </div>
+  );
+}
+
+function ArticleDetail({ article }) {
+  const [tab, setTab] = useState("overview");
+  const ch = CHAPTER_COLORS[article.chapter] || CHAPTER_COLORS["I"];
+  const rel = RELEVANCE_STYLE[article.consentRelevance];
+  const tabs = [
+    { id: "overview", label: "📋 Overview" },
+    { id: "consent",  label: "🔐 Consent & Pref. Mgmt" },
+    { id: "ccpa",     label: "⚖️ vs CCPA / CPRA" },
+  ];
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{
+        background: `linear-gradient(135deg, ${ch.accent}f0, ${ch.accent})`,
+        padding: "18px 22px", borderRadius: "0 0 0 0", color: "#fff", flexShrink: 0
+      }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <div style={{
+            background: "rgba(255,255,255,0.22)", borderRadius: 9,
+            padding: "5px 13px", fontSize: 20, fontWeight: 900, letterSpacing: -1, flexShrink: 0
+          }}>{article.num}</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 2, opacity: 0.8, textTransform: "uppercase" }}>
+              Chapter {article.chapter} · {article.chapterName}
+            </div>
+            <div style={{ fontSize: 17, fontWeight: 800, lineHeight: 1.25, marginTop: 3 }}>
+              {article.name}
+            </div>
+          </div>
+          <span style={{
+            background: rel.bg, color: rel.color, border: `1px solid ${rel.border}`,
+            borderRadius: 20, padding: "3px 11px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", flexShrink: 0
+          }}>{rel.label}</span>
+        </div>
+        <div style={{ display: "flex", gap: 5, marginTop: 10, flexWrap: "wrap" }}>
+          {article.tags.map(t => (
+            <span key={t} style={{
+              background: "rgba(255,255,255,0.18)", borderRadius: 20,
+              padding: "2px 9px", fontSize: 10, fontWeight: 600
+            }}>{t}</span>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", borderBottom: "2px solid #f0f0f0", background: "#fafafa", flexShrink: 0 }}>
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{
+            border: "none", background: "none", padding: "9px 16px", cursor: "pointer",
+            fontSize: 12, fontWeight: tab === t.id ? 700 : 500,
+            color: tab === t.id ? ch.accent : "#666",
+            borderBottom: tab === t.id ? `2.5px solid ${ch.accent}` : "2.5px solid transparent",
+            marginBottom: -2, transition: "all 0.15s"
+          }}>{t.label}</button>
+        ))}
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto", padding: "18px 22px" }}>
+        {tab === "overview" && (
+          <div>
+            <p style={{
+              fontSize: 13, lineHeight: 1.75, color: "#333", marginBottom: 18,
+              background: ch.bg, borderRadius: 8, padding: 13,
+              borderLeft: `4px solid ${ch.accent}`, margin: "0 0 18px 0"
+            }}>{article.summary}</p>
+            <div style={{ fontWeight: 700, color: "#1a1a2e", marginBottom: 10, fontSize: 13 }}>🎯 Key Points</div>
+            {article.keyPoints.map((kp, i) => (
+              <div key={i} style={{ display: "flex", gap: 9, marginBottom: 8, alignItems: "flex-start" }}>
+                <span style={{
+                  minWidth: 21, height: 21, borderRadius: "50%", display: "flex",
+                  alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800,
+                  background: ch.accent, color: "#fff", marginTop: 1, flexShrink: 0
+                }}>{i + 1}</span>
+                <span style={{ fontSize: 13, color: "#333", lineHeight: 1.65 }}>{kp}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {tab === "consent" && (
+          <div>
+            <div style={{
+              background: rel.bg, border: `1px solid ${rel.border}`,
+              borderRadius: 8, padding: 13, marginBottom: 18
+            }}>
+              <div style={{ fontWeight: 700, fontSize: 12, color: rel.color, marginBottom: 5 }}>
+                Consent & Preference Management Relevance: {rel.label}
+              </div>
+              <p style={{ fontSize: 13, lineHeight: 1.72, margin: 0, color: "#333" }}>
+                {article.consentDetail}
+              </p>
+            </div>
+            <div style={{ fontWeight: 700, color: "#1a1a2e", marginBottom: 8, fontSize: 13 }}>
+              🛠️ Practical Implications for CMP / OneTrust Work
+            </div>
+            <div style={{ background: "#f8f9fa", borderRadius: 8, padding: 13, fontSize: 13, color: "#444", lineHeight: 1.72 }}>
+              {article.consentRelevance === "Yes" && <span style={{ color: "#155724", fontWeight: 700 }}>✓ Directly drives CMP configuration requirements. </span>}
+              {article.consentRelevance === "Partial" && <span style={{ color: "#856404", fontWeight: 700 }}>~ Indirectly relevant — consider in broader data protection workflows. </span>}
+              {article.consentRelevance === "No" && <span style={{ color: "#721c24", fontWeight: 700 }}>✗ Not directly applicable to consent/preference management workflows. </span>}
+              Review this article when designing consent flows, preference centres, DSR workflows, or vendor assessments.
+            </div>
+          </div>
+        )}
+        {tab === "ccpa" && (
+          <div>
+            <div style={{ fontWeight: 700, color: "#1a1a2e", marginBottom: 8, fontSize: 13 }}>🇺🇸 CCPA / CPRA Position</div>
+            <p style={{
+              fontSize: 13, lineHeight: 1.72, color: "#333",
+              background: "#f0f6ff", borderRadius: 8, padding: 13,
+              borderLeft: "4px solid #1565c0", marginBottom: 18
+            }}>{article.ccpa}</p>
+            <div style={{ fontWeight: 700, color: "#1a1a2e", marginBottom: 10, fontSize: 13 }}>
+              ⚖️ Key Differences: GDPR vs CCPA / CPRA
+            </div>
+            {article.ccpaDiff.map((d, i) => (
+              <div key={i} style={{ display: "flex", gap: 9, marginBottom: 8, alignItems: "flex-start" }}>
+                <span style={{ color: "#1565c0", fontSize: 14, marginTop: 2, flexShrink: 0 }}>▸</span>
+                <span style={{ fontSize: 13, color: "#333", lineHeight: 1.65 }}>{d}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [selected, setSelected] = useState(ARTICLES[0]);
+  const [search, setSearch] = useState("");
+  const [filterChapter, setFilterChapter] = useState("All");
+  const [filterConsent, setFilterConsent] = useState("All");
+
+  const filtered = ARTICLES.filter(a => {
+    const q = search.toLowerCase();
+    const matchSearch = !search ||
+      a.name.toLowerCase().includes(q) ||
+      a.summary.toLowerCase().includes(q) ||
+      a.tags.some(t => t.toLowerCase().includes(q)) ||
+      `article ${a.num}`.includes(q) || `art ${a.num}`.includes(q) || `art.${a.num}`.includes(q);
+    const matchChapter = filterChapter === "All" || a.chapter === filterChapter;
+    const matchConsent = filterConsent === "All" || a.consentRelevance === filterConsent;
+    return matchSearch && matchChapter && matchConsent;
+  });
+
+  const chapterGroups = {};
+  filtered.forEach(a => {
+    if (!chapterGroups[a.chapter]) chapterGroups[a.chapter] = { name: a.chapterName, articles: [] };
+    chapterGroups[a.chapter].articles.push(a);
+  });
+
+  const counts = {
+    Yes: ARTICLES.filter(a => a.consentRelevance === "Yes").length,
+    Partial: ARTICLES.filter(a => a.consentRelevance === "Partial").length,
+    No: ARTICLES.filter(a => a.consentRelevance === "No").length,
+  };
+
+  return (
+    <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", background: "#eef0f5", height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      {/* Top bar */}
+      <div style={{
+        background: "linear-gradient(135deg, #0a1929, #1565c0)",
+        padding: "0 18px", display: "flex", alignItems: "center", gap: 12,
+        height: 50, flexShrink: 0, boxShadow: "0 2px 10px rgba(0,0,0,0.35)"
+      }}>
+        <div style={{ fontSize: 17 }}>🛡️</div>
+        <div>
+          <div style={{ color: "#fff", fontWeight: 800, fontSize: 14, letterSpacing: -0.3 }}>GDPR Learning Hub</div>
+          <div style={{ color: "#90caf9", fontSize: 9.5, letterSpacing: 0.4 }}>
+            Arts. 1–35 · Consent & Pref. Mgmt · CCPA/CPRA Comparison
+          </div>
+        </div>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 5, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 8, marginRight: 10 }}>
+            {[["Yes","#4caf50","Direct"], ["Partial","#ff9800","Partial"], ["No","#f44336","N/A"]].map(([k,c,l]) => (
+              <div key={k} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: c }} />
+                <span style={{ color: "#ccc", fontSize: 10 }}>{l} ({counts[k]})</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        {/* Left: article list */}
+        <div style={{ width: 285, flexShrink: 0, background: "#fff", display: "flex", flexDirection: "column", borderRight: "1px solid #e0e0e0" }}>
+          <div style={{ padding: "9px 9px 6px", borderBottom: "1px solid #f0f0f0" }}>
+            <input
+              placeholder="🔍 Search articles, keywords, tags..."
+              value={search} onChange={e => setSearch(e.target.value)}
+              style={{ width: "100%", border: "1.5px solid #e3e8f0", borderRadius: 7, padding: "6px 10px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+            />
+            <div style={{ display: "flex", gap: 4, marginTop: 5 }}>
+              {[["filterChapter", filterChapter, setFilterChapter, ["All","I","II","III","IV"], (c) => c === "All" ? "All Chapters" : `Ch. ${c}`],
+                ["filterConsent", filterConsent, setFilterConsent, ["All","Yes","Partial","No"], (c) => c === "All" ? "All Relevance" : c]
+              ].map(([key, val, setter, opts, label]) => (
+                <select key={key} value={val} onChange={e => setter(e.target.value)} style={{
+                  flex: 1, border: "1px solid #e0e0e0", borderRadius: 6, padding: "4px 5px",
+                  fontSize: 10.5, background: "#fafafa", outline: "none"
+                }}>
+                  {opts.map(o => <option key={o} value={o}>{label(o)}</option>)}
+                </select>
+              ))}
+            </div>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto", padding: "7px 7px" }}>
+            {Object.keys(chapterGroups).sort().map(ch => (
+              <div key={ch}>
+                <div style={{
+                  fontSize: 9.5, fontWeight: 800, letterSpacing: 1.5,
+                  color: CHAPTER_COLORS[ch]?.accent || "#666",
+                  padding: "6px 5px 3px", textTransform: "uppercase"
+                }}>Ch. {ch} · {chapterGroups[ch].name}</div>
+                {chapterGroups[ch].articles.map(a => (
+                  <ArticleCard key={a.num} article={a} onClick={setSelected} isSelected={selected?.num === a.num} />
+                ))}
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div style={{ textAlign: "center", color: "#aaa", padding: 20, fontSize: 12 }}>No articles match</div>
+            )}
+          </div>
+        </div>
+
+        {/* Middle: article detail */}
+        <div style={{ flex: 1, background: "#fff", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+          {selected
+            ? <ArticleDetail article={selected} />
+            : <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#bbb", fontSize: 14 }}>← Select an article</div>
+          }
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Privacy — Client Workflow</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#081114; --text:#eef0f2; --muted:#8fa2b0; --accent:#86BC25; --accent-alt:#a3ce50; --surface:rgba(14,25,33,.96); --border:rgba(134,188,37,.16); }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{min-height:100vh;font-family:'DM Sans',sans-serif;background:linear-gradient(180deg,#071117,#0b1820);color:var(--text);}
+    a{color:var(--accent);text-decoration:none;}
+    .page{max-width:1120px;margin:0 auto;padding:40px 24px 60px;}
+    .nav{margin-bottom:28px;display:flex;flex-wrap:wrap;gap:12px;}
+    .nav a{font-size:.95rem;font-weight:600;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(134,188,37,.14);}
+    h1{font-family:'DM Serif Display',serif;font-size:3.2rem;margin-bottom:40px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px;}
+    .card{background:rgba(14,25,33,.6);border:1px solid rgba(134,188,37,.2);border-radius:16px;padding:28px;transition:all .3s ease;}
+    .card:hover{border-color:rgba(134,188,37,.4);box-shadow:0 12px 40px rgba(0,0,0,.3);}
+    .card h3{font-size:1.1rem;margin-bottom:16px;color:var(--accent);font-weight:600;}
+    .card ul{list-style:none;padding:0;}
+    .card li{font-size:.95rem;color:var(--muted);line-height:1.8;margin-bottom:10px;padding-left:20px;position:relative;}
+    .card li:before{content:"•";position:absolute;left:0;color:var(--accent);}
+    @media(max-width:820px){.grid{grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:18px;}.card{padding:22px;}}
+    @media(max-width:620px){.page{padding:28px 18px 56px;}h1{font-size:2.4rem;margin-bottom:28px;}.grid{grid-template-columns:1fr;}.card{padding:20px;}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="nav">
+      <a href="data-privacy-interactive.html">Home</a>
+      <a href="data-privacy-goals.html">Goals</a>
+      <a href="data-privacy-deliverables.html">Deliverables</a>
+      <a href="data-privacy-onetrust.html">OneTrust</a>
+      <a href="data-privacy-nextsteps.html">Next Steps</a>
+    </div>
+    <h1>Client Workflow</h1>
+    <div class="grid">
+      <div class="card">
+        <h3>1. Receive URL and Cookie Details</h3>
+        <ul>
+          <li>Collect the required site URL</li>
+          <li>Gather all cookie information</li>
+          <li>Document data requirements</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>2. Generate Sitemap</h3>
+        <ul>
+          <li>Map website structure</li>
+          <li>Identify deployment points</li>
+          <li>Organize page hierarchy</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>3. Scan the URL in OneTrust</h3>
+        <ul>
+          <li>Run website scan</li>
+          <li>Detect cookies automatically</li>
+          <li>Collect site data</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>4. Assign Cookies to the URL</h3>
+        <ul>
+          <li>Match cookies to URLs</li>
+          <li>Classify cookie types</li>
+          <li>Organize for consent setup</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>5. Configure Banner & Preference Center</h3>
+        <ul>
+          <li>Build banner template</li>
+          <li>Create preference center</li>
+          <li>Set geolocation rules</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>6. Publish the Script</h3>
+        <ul>
+          <li>Publish OneTrust script</li>
+          <li>Deploy to live site</li>
+          <li>Enable live workflow</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>7. Share the Data Domain Script</h3>
+        <ul>
+          <li>Deliver final script</li>
+          <li>Document deployment</li>
+          <li>Provide tracking info</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
