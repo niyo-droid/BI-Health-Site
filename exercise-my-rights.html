@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exercise My Rights - BI Health</title>
+  <link rel="icon" type="image/png" sizes="180x180" href="favicon-180x180.png" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Aptos, Arial, sans-serif;
+      background: #f6f8f5;
+      color: #102a22;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .top-bar-wrap {
+      padding: 28px 0 10px;
+    }
+
+    .top-bar {
+      background: #ffffff;
+      border: 1px solid rgba(16, 42, 34, 0.12);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(16, 42, 34, 0.10);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #18392f;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .nav-item img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    .logo-bi {
+      min-width: 60px;
+      height: 44px;
+      border: 2px solid #18392f;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #18392f;
+      background: #fdfdfc;
+      letter-spacing: 1px;
+    }
+
+    .form-section {
+      padding: 40px 0 70px;
+    }
+
+    .form-title {
+      font-size: 30px;
+      font-weight: 700;
+      color: #102a22;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .form-subtitle {
+      max-width: 700px;
+      margin: 0 auto 28px;
+      text-align: center;
+      color: #51665f;
+      line-height: 1.6;
+    }
+
+    .ot-form-wrapper {
+      max-width: 750px;
+      height: 800px;
+      border: 1px solid #c0c2c7;
+      margin: auto;
+    }
+
+    .ot-form-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 28px;
+      color: #1f5a47;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 992px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .nav-links {
+        justify-content: center;
+      }
+
+      .logo-bi {
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .nav-links {
+        gap: 16px;
+      }
+
+      .nav-item {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar-wrap">
+    <div class="container">
+      <div class="top-bar">
+        <nav class="nav-links">
+          <a href="index.html" class="nav-item">
+            <img src="doctor.png" alt="Home icon">
+            <span>Home</span>
+          </a>
+          <a href="index.html#about" class="nav-item">
+            <img src="doctor.png" alt="About Us icon">
+            <span>About Us</span>
+          </a>
+          <a href="index.html#projects" class="nav-item">
+            <img src="graph.png" alt="Projects icon">
+            <span>Projects</span>
+          </a>
+          <a href="index.html#services" class="nav-item">
+            <img src="services.png" alt="Services icon">
+            <span>Services</span>
+          </a>
+        </nav>
+
+        <div class="logo-bi">BI</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="form-section">
+    <div class="container">
+      <a href="index.html" class="back-link">← Back to Home</a>
+      <h2 class="form-title">Exercise My Rights</h2>
+      <p class="form-subtitle">
+        Submit your data subject request. We're here to help you exercise your privacy rights.
+      </p>
+
+      <!-- OneTrust Web Form start -->
+      <div class="ot-form-wrapper">
+        <iframe src="https://hbucv-privacy.my.onetrust.com/webform/920f4633-570d-4168-84fb-38be47679c8f/f3c41883-b74d-4b36-8909-e42fd7f8c1a1">
+        </iframe>
+      </div>
+      <!-- OneTrust Web Form end -->
+    </div>
+  </section>
+
+</body>
+</html>

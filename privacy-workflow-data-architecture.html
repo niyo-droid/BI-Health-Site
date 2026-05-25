@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRIVACY WORKFLOW DATA ARCHITECTURE</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
+      color: #2C2C2C;
+      background: #FFFFFF;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #FFFFFF;
+    }
+    .slide {
+      width: 100%;
+      max-width: 1600px;
+      min-height: auto;
+      margin: 0 auto;
+      padding: 24px;
+      background: #FFFFFF;
+      border-radius: 24px;
+      box-shadow: 0 18px 42px rgba(44, 44, 44, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .slide-title {
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      margin: 0;
+      line-height: 1.1;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: #5A5A5A;
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 100%;
+      margin: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px;
+      flex: 1;
+    }
+    .column {
+      background: #FFFFFF;
+      border-radius: 24px;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.06);
+      border: 1px solid rgba(44,44,44,0.06);
+      min-height: 540px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .column-header {
+      padding: 16px 14px;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+      border-radius: 24px 24px 0 0;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .column-body {
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+    .icon-card {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      align-self: flex-start;
+    }
+    .icon-card svg {
+      width: 30px;
+      height: 30px;
+      fill: #2C2C2C;
+    }
+    .column-text {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: #2C2C2C;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .column-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .column-text ul,
+    .column-text li {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .column-text li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .bullet {
+      width: 6px;
+      min-height: 6px;
+      margin-top: 6px;
+      border-radius: 50%;
+      background: #2C2C2C;
+      flex-shrink: 0;
+      margin-left: 2px;
+    }
+    .nested-list {
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .bottom-box {
+      margin-top: auto;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: #F6F7FB;
+      color: #2C2C2C;
+      font-size: 13px;
+      line-height: 1.6;
+      border: 1px solid rgba(44,44,44,0.08);
+    }
+    .bottom-box strong {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .dotted-line {
+      margin-top: 12px;
+      padding: 18px 0 0;
+      border-top: 1px dashed rgba(44,44,44,0.24);
+      display: flex;
+      justify-content: center;
+      color: #5A5A5A;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+    .footer {
+      padding: 22px 24px;
+      border-radius: 24px;
+      border: 1px solid rgba(44,44,44,0.08);
+      background: #FAFBFF;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .footer-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin: 0;
+      text-transform: uppercase;
+    }
+    .footer-items {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .footer-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #FFFFFF;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.04);
+      border: 1px solid rgba(44,44,44,0.06);
+    }
+    .footer-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #F6F7FB;
+    }
+    .footer-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #2C2C2C;
+    }
+    .footer-label {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #2C2C2C;
+      font-weight: 600;
+    }
+    .footer-item span {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="title-bar">
+      <div class="title-group">
+        <h1 class="slide-title">PRIVACY WORKFLOW DATA ARCHITECTURE</h1>
+         <p class="subtitle">Consent Collected -> Stored -> Governed -> Shared -> Monitored</p>
+      </div>
+    </div>
+
+    <div style="position: relative;">
+      <div class="grid">
+        <div class="column">
+          <div class="column-header" style="background: #4A90E2;">1. DATA COLLECTION (Webform)</div>
+          <div class="column-body">
+            <div class="icon-card">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="14" width="44" height="36" rx="6" ry="6" stroke="#2C2C2C" stroke-width="3" fill="none"/><path d="M18 22h28" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M18 30h18" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M18 38h18" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M18 46h10" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="column-text">
+              <ul>
+                <li><span class="bullet"></span><strong>Webform / Website</strong></li>
+                <li><span class="bullet"></span>Captures:</li>
+              </ul>
+              <div class="nested-list">
+                <div><span class="bullet"></span>Personal Information (Name, Email, etc.)</div>
+                <div><span class="bullet"></span>Consent (Checkboxes, Banners)</div>
+                <div><span class="bullet"></span>Preferences (Marketing, Analytics, etc.)</div>
+              </div>
+            </div>
+            <div class="bottom-box">
+              <strong>OneTrust (CMP / Preference Center)</strong>
+              Consent & Preference Capture
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="column-header" style="background: #50C878;">2. INGESTION & API LAYER</div>
+          <div class="column-body">
+            <div class="icon-card">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 22h24v20H20z" stroke="#2C2C2C" stroke-width="3" fill="none"/><path d="M32 16v8" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M28 20h8" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M18 30l-6 6 6 6" stroke="#2C2C2C" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 30l6 6-6 6" stroke="#2C2C2C" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="column-text">
+              <ul>
+                <li><span class="bullet"></span>API Gateway</li>
+                <li><span class="bullet"></span>Webhooks / REST API</li>
+                <li><span class="bullet"></span>Integration / Middleware</li>
+              </ul>
+              <div class="nested-list">
+                <div><span class="bullet"></span>Validation & Standardization</div>
+              </div>
+            </div>
+            <div class="bottom-box">
+              <strong>Validated Consent Payload (JSON)</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="column-header" style="background: #8E6EC7;">3. DATA STORAGE (System of Record)</div>
+          <div class="column-body">
+            <div class="icon-card">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="16" rx="20" ry="10" stroke="#2C2C2C" stroke-width="3" fill="none"/><path d="M12 16v28c0 5.523 8.955 10 20 10s20-4.477 20-10V16" stroke="#2C2C2C" stroke-width="3" fill="none"/><path d="M12 28c0 5.523 8.955 10 20 10s20-4.477 20-10" stroke="#2C2C2C" stroke-width="3" fill="none"/></svg>
+            </div>
+            <div class="column-text">
+              <ul>
+                <li><span class="bullet"></span>Consent Database (System of Record)</li>
+                <li><span class="bullet"></span>Consent & Preference Data</li>
+                <li><span class="bullet"></span>Consent Versioning</li>
+                <li><span class="bullet"></span>Timestamps & Source</li>
+                <li><span class="bullet"></span>User / Identity Mapping</li>
+              </ul>
+            </div>
+            <div class="bottom-box">
+              <strong>CRM (Customer Data)</strong>
+              Data Lake / Warehouse
+              <div style="margin-top: 10px; font-weight: 600;">Security: Encryption at Rest & In Transit</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="column-header" style="background: #F5A623;">4. CONSENT ENFORCEMENT & PROCESSING</div>
+          <div class="column-body">
+            <div class="icon-card">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="12" stroke="#2C2C2C" stroke-width="3" fill="none"/><path d="M32 16v6" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M32 42v6" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M16 32h6" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M42 32h6" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M22 22l4 4" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M42 42l4 4" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="column-text">
+              <ul>
+                <li><span class="bullet"></span>Policy / Rules Engine</li>
+                <li><span class="bullet"></span>Consent Validation Service</li>
+                <li><span class="bullet"></span>Business Rules (Allow / Block / Restrict)</li>
+              </ul>
+            </div>
+            <div class="bottom-box">
+              <strong>Example logic</strong>
+              ✔ Marketing Consent = Yes → Allow Campaigns<br>
+              ✖ Analytics Consent = No → Block Tracking
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="column-header" style="background: #2BBBAD;">5. DATA DISTRIBUTION TO DOWNSTREAM SYSTEMS</div>
+          <div class="column-body">
+            <div class="icon-card">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 38h24" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M14 28h36v20H14z" stroke="#2C2C2C" stroke-width="3" fill="none"/><path d="M20 22h24" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M10 28l6-6" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M54 28l-6-6" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="column-text">
+              <ul>
+                <li><span class="bullet"></span>CRM (Salesforce, etc.)</li>
+                <li><span class="bullet"></span>Marketing Automation</li>
+                <li><span class="bullet"></span>Analytics Platforms</li>
+                <li><span class="bullet"></span>Third-Party Vendors</li>
+              </ul>
+            </div>
+            <div class="bottom-box">
+              <strong>Distribution Mechanisms</strong>
+              • APIs<br>
+              • Event Streaming (Kafka)<br>
+              • ETL Pipelines
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="column-header" style="background: #34495E;">6. MONITORING, AUDIT & COMPLIANCE</div>
+          <div class="column-body">
+            <div class="icon-card">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M16 44h32" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M16 34h20" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><path d="M16 24h12" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round"/><rect x="42" y="18" width="12" height="28" rx="4" ry="4" stroke="#2C2C2C" stroke-width="3" fill="none"/><path d="M46 34l4 4 6-8" stroke="#2C2C2C" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="column-text">
+              <ul>
+                <li><span class="bullet"></span>Audit Logs (Who, What, When, How)</li>
+                <li><span class="bullet"></span>Monitoring Dashboard & Alerts</li>
+                <li><span class="bullet"></span>Compliance Reports & Data Requests</li>
+              </ul>
+              <div class="nested-list">
+                <div><span class="bullet"></span>Access, Delete, Opt-out</div>
+              </div>
+            </div>
+            <div class="bottom-box">
+              <strong>Supports:</strong>
+              GDPR, CCPA
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="dotted-line">Consent & Preferences Travel With the Data</div>
+
+    <div class="footer">
+      <h2 class="footer-title">CROSS-CUTTING CONCERNS (APPLIES TO ALL LAYERS)</h2>
+      <div class="footer-items">
+        <div class="footer-item">
+          <div class="footer-icon"><svg viewBox="0 0 24 24"><path d="M12 1.75c3.62 0 6.56 2.82 6.91 6.4c-1.06.47-1.83 1.52-1.83 2.77v5.08c0 2.09-1.71 3.79-3.82 3.79S9.24 17.05 9.24 14.96V10.2c0-1.25-.76-2.3-1.83-2.77C5.44 4.57 8.38 1.75 12 1.75Z"/></svg></div>
+          <span class="footer-label">Security & Privacy</span>
+        </div>
+        <div class="footer-item">
+          <div class="footer-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v2H5zM5 10h14v2H5zM5 16h14v2H5z"/></svg></div>
+          <span class="footer-label">Data Governance</span>
+        </div>
+        <div class="footer-item">
+          <div class="footer-icon"><svg viewBox="0 0 24 24"><path d="M5 12h4v8H5zM15 8h4v12h-4zM10 16h4v4h-4z"/></svg></div>
+          <span class="footer-label">Audit & Logging</span>
+        </div>
+        <div class="footer-item">
+          <div class="footer-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v2H5zm2 6h10v2H7zm2 6h6v2H9z"/></svg></div>
+          <span class="footer-label">Data Minimization</span>
+        </div>
+        <div class="footer-item">
+          <div class="footer-icon"><svg viewBox="0 0 24 24"><path d="M6 3h12v2H6zm2 4h8v2H8zm-2 4h12v2H6zm2 4h8v2H8zm-2 4h12v2H6z"/></svg></div>
+          <span class="footer-label">Retention & Deletion</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

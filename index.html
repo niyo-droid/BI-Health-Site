@@ -122,7 +122,26 @@
       margin-bottom: 28px;
     }
 
+    .button-group {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
     .register-btn {
+      display: inline-block;
+      background: #000000;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 14px 26px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
+    }
+
+    .rights-btn {
       display: inline-block;
       background: #000000;
       color: #ffffff;
@@ -283,6 +302,10 @@
             <img src="services.png" alt="Services icon">
             <span>Services</span>
           </a>
+          <a href="gdpr-agent.html" class="nav-item">
+            <img src="" alt="" style="width:0;height:0;display:none">
+            <span>GDPR Q&amp;A</span>
+          </a>
         </nav>
 
         <div class="logo-bi">BI</div>
@@ -300,7 +323,10 @@
             We build trusted healthcare and pharmaceutical solutions with a
             minimal, modern approach focused on quality, research, and impact.
           </p>
-          <a href="#register" class="register-btn">Registration</a>
+          <div class="button-group">
+            <a href="#register" class="register-btn">Registration</a>
+            <a href="exercise-my-rights.html" class="rights-btn">Exercise my rights</a>
+          </div>
         </div>
 
         <div class="hero-image-wrap">
